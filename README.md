@@ -32,7 +32,7 @@ mix.exs
       {:phoenix_live_reload, "~> 1.0", only: :dev},
       {:gettext, "~> 0.11"},
       {:cowboy, "~> 1.0"},
-      {:materia_chat, "~> 0.1.0"}, #<- add here
+      {:materia_chat, git: "git@github.com:karabiner-inc/materia_chat.git"}, #<- add here
     ]
   end
 ```
@@ -51,42 +51,34 @@ mix.exs
   mix materia_chat.gen.migration
   mix ecto.migration
   ```
-#### configure for BatchManager
+#### configure for MateriaChat
 
-add configure your config.exs or environment config file. 
-
-```
-# Configures MateriaChat
- config :materia_chat, MateriaChat.JobSchedules.JobScheduleManager,
-  max_concurrent_jobs: 2, # number of max concurrent execute job
-  job_check_interval: 60000 # default 60000msec
+modify lib/your_app_web/endpoint.ex file socket definition. 
 
 ```
+defmodule YourAppWeb.Endpoint do
 
-#### add BatchManager GenServer Process
+  use Phoenix.Endpoint, otp_app: :your_app
 
-add MateriaChat.BatchManagers.JobScheduleManager in you application children process.
+  #socket "/socket", YourAppWeb.UserSocket # <- remove here
+  socket "/your-socket-path", MateriaChatWeb.UserSocket # <- add here
 
 ```
-defmodule MateriaChat.Test.Application do
-  use Application
 
-  ~~~
+add routing MateriaChat endpoint on lib/your_app_web/endpoint.ex file if you need.
 
-    # Define workers and child supervisors to be supervised
-    children = [
-      # Start the Ecto repository
-      supervisor(MateriaChat.Test.Repo, []),
-      # Start the endpoint when the application starts
-      supervisor(MateriaChatWeb.Test.Endpoint, []),
-      # Start your own worker by calling: MateriaChat.Worker.start_link(arg1, arg2, arg3)
-      # worker(MateriaChat.Worker, [arg1, arg2, arg3]),
-      worker(MateriaChat.BatchManagers.JobScheduleManager, []) # add here
-    ]
+```
+scope "/api", MateriaChatWeb do
+    pipe_through [:api, :user_auth]
 
-   ~~~
-  
-end
+    get "/my-chat-rooms", ChatRoomController, :list_my_chat_rooms
+    post "/create-my-chat-room", ChatRoomController, :create_my_chat_room
+    post "/add-my-chat-room-members", ChatRoomController, :add_my_chat_room_members
+    post "/remove-my-chat-room-members", ChatRoomController, :remove_my_chat_room_members
+    post "list-my-chat-message-recent", ChatMessageController, :list_my_chat_messages_recent
+
+  end
+
 ```
 
 ## Learn more

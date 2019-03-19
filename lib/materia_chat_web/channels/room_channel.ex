@@ -56,7 +56,7 @@ defmodule MateriaChatWeb.RoomChannel do
 
     {:ok, message} = Messages.create_chat_message(%{chat_room_id: chat_room_id, from_user_id: from_user_id, body: body, send_datetime: CalendarUtil.now()})
 
-    broadcast!(socket, "msg", %{body: message.body, from_user_id: message.from_user_id, send_datetime: CalendarUtil.now()})
+    broadcast!(socket, "msg", %{id: message.id, body: message.body, from_user_id: message.from_user_id, send_datetime: CalendarUtil.now()})
     {:noreply, socket}
   end
 
