@@ -1,0 +1,75 @@
+############################################
+# APIリクエストサンプル集
+#
+############################################
+
+@url = http://localhost:4001
+#@url = https://
+
+
+###ログイン(ユーザー認証)
+POST {{url}}/api/sign-in HTTP/1.1
+Content-Type: application/json
+
+{
+    "email": "fugafuga@example.com", 
+    "password": "fugafuga"
+  }
+
+@token = Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJNYXRlcmlhIiwiZW1haWwiOiJmdWdhZnVnYUBleGFtcGxlLmNvbSIsImV4cCI6MTU1Mjk3MzgzOCwiaWF0IjoxNTUyOTczMjM4LCJpc3MiOiJNYXRlcmlhIiwianRpIjoiZDEwYjU3MTYtN2E4Mi00YjdiLWE5ODQtZWNmN2FhZGQyNTlhIiwibmJmIjoxNTUyOTczMjM3LCJzdWIiOiJ7XCJ1c2VyX2lkXCI6Mn0iLCJ0eXAiOiJhY2Nlc3MifQ.wXNj4H6TziHf75d2nrrUCiNjPymaC38GcjNQdpAkSYU
+
+### 自分のチャットルーム一覧取得
+
+GET {{url}}/api/my-chat-rooms HTTP/1.1
+Content-Type: application/json
+Authorization: {{token}}
+
+### 自分のチャットルームを作成（作成者は強制的にAdminでメンバ登録される）
+POST {{url}}/api/create-my-chat-room HTTP/1.1
+Content-Type: application/json
+Authorization: {{token}}
+
+{
+    "title": "some title",
+    "access_poricy": "public"
+}
+
+### 自分のチャットルームを作成(自分以外の追加のメンバーを指定)
+POST {{url}}/api/create-my-chat-room HTTP/1.1
+Content-Type: application/json
+Authorization: {{token}}
+
+{
+    "title": "some title　with members",
+    "access_poricy": "private",
+    "members": [
+        {"user_id": 1, "id_admin": 1},
+        {"user_id": 3, "is_admin": 0}
+    ]
+}
+
+### 自分が管理者のチャットルームにメンバーを追加
+POST {{url}}/api/add-my-chat-room-members HTTP/1.1
+Content-Type: application/json
+Authorization: {{token}}
+
+{
+    "chat_room_id": 2,
+    "members": [
+        { "user_id": 1, "is_admin": 1},
+        { "user_id": 3, "is_admin": 1}
+    ]
+}
+
+### 自分が管理者のチャットルームからメンバーを削除
+POST {{url}}/api/remove-my-chat-room-members HTTP/1.1
+Content-Type: application/json
+Authorization: {{token}}
+
+{
+    "chat_room_id": 2,
+    "members": [
+        { "user_id": 1, "is_admin": 1},
+        { "user_id": 3, "is_admin": 1}
+    ]
+}
