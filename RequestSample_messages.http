@@ -16,6 +16,7 @@ Content-Type: application/json
     "password": "fugafuga"
   }
 
+
 @token = Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJNYXRlcmlhIiwiZW1haWwiOiJmdWdhZnVnYUBleGFtcGxlLmNvbSIsImV4cCI6MTU1Mjk3NTY0MSwiaWF0IjoxNTUyOTc1MDQxLCJpc3MiOiJNYXRlcmlhIiwianRpIjoiNWE0Yzg0NjQtYjQ1Yi00YmQ0LTg0OWItYzJiNmE1YmUzZDIwIiwibmJmIjoxNTUyOTc1MDQwLCJzdWIiOiJ7XCJ1c2VyX2lkXCI6Mn0iLCJ0eXAiOiJhY2Nlc3MifQ.W8mupoSTkzgaifAGDqduBByuq_j9fNoLSDvXTecLp1g
 
 ### 自分の直近limmit_count件のメッセージを取得

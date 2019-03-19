@@ -23,7 +23,7 @@ defmodule MateriaChatWeb.Router do
     plug Materia.UserAuthPipeline
   end
 
-  pipeline :guardian_auth_acount do
+  pipeline :guardian_auth_account do
     plug Materia.AccountAuthPipeline
   end
 
