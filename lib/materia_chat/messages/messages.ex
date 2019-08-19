@@ -8,6 +8,8 @@ defmodule MateriaChat.Messages do
   alias MateriaChat.Messages.ChatMessage
   alias MateriaChat.Rooms
 
+  alias  MateriaUtils.Enum.EnumLikeSqlUtil
+
   @repo Application.get_env(:materia, :repo)
 
   @doc """
@@ -193,9 +195,78 @@ defmodule MateriaChat.Messages do
     else
       query
     end
-    @repo.all(query)
+
+    # get unreads and merge
+    messages = query
+    |> @repo.all()
+    message_id_list = messages
+    |> Enum.map(fn(message) -> message.id end)
+
+    unreads = message_id_list
+    |> list_chat_unreads_by_chat_message_id()
+
+    associate_key_list = [id: :chat_message_id]
+    EnumLikeSqlUtil.dynamic_preload(:has_many, associate_key_list, messages, unreads, :chat_unreads)
 
   end
 
+  @doc """
+
+  iex(1) > MateriaChat.Messages.list_chat_unreads_by_chat_message_id([1, 2])
+
+  """
+  def list_chat_unreads_by_chat_message_id(chat_message_id_list) when is_list(chat_message_id_list) do
+
+    unreads = ChatUnread
+    |> where([c], c.chat_message_id in ^chat_message_id_list)
+    |> @repo.all()
+
+  end
+
+
+  @doc """
+
+    iex(1) > MateriaChat.Messages.create_chat_unreads(1, 1)
+
+  """
+  def create_chat_unreads(chat_room_id, chat_message_id) do
+
+    members = Rooms.list_chat_room_members_by_params(%{"and" => [%{"chat_room_id" => chat_room_id}]})
+
+    unreads = members
+    |> Enum.map(fn(member) ->
+      {:ok, chat_unread} = create_chat_unread(
+        %{
+          chat_message_id: chat_message_id,
+          user_id: member.user_id
+        }
+      )
+    end)
+
+  {:ok, unreads}
+  end
+
+  @doc """
+
+    iex(1)> MateriaChat.Messages.list_my_unread_messages(1)
+
+  """
+  def list_my_unread_messages(user_id) do
+
+    ChatUnread
+    |> where(user_id: ^user_id)
+    |> where(is_unread: ^ChatUnread.is_unread.unread)
+    |> order_by([desc: :updated_at])
+    |> @repo.all()
+    |> @repo.preload([:user, :chat_message])
+
+  end
+
+  @doc """
+   iex(1)> MateriaChat.
+  """
+  def update_chat_unreads_status(status) do
+
+  end
 
 end

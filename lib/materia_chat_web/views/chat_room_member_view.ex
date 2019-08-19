@@ -25,7 +25,7 @@ defmodule MateriaChatWeb.ChatRoomMemberView do
     if Ecto.assoc_loaded?(chat_room_member.user) do
       Map.put(result_map, :user, UserView.render("show.json", %{user: chat_room_member.user}))
     else
-      Map.put(result_map, :user, [])
+      Map.put(result_map, :user, nil)
     end
   end
 end

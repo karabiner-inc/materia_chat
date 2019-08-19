@@ -1,4 +1,4 @@
-# Materia Batch
+# Materia Chat
 
 [![hex.pm](https://img.shields.io/hexpm/l/plug.svg)](https://github.com/karabiner-inc/materia_chat/blob/master/LICENSE)
 [![Coverage Status](https://coveralls.io/repos/github/karabiner-inc/materia_chat/badge.svg?branch=master)](https://coveralls.io/github/karabiner-inc/materia_chat?branch=master)

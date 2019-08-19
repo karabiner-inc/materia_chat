@@ -4,12 +4,13 @@ defmodule MateriaChat.Messages.ChatUnread do
 
 
   schema "chat_unreads" do
-    field :chat_message_id, :integer
+    #field :chat_message_id, :integer
     field :is_unread, :integer, default: 1
     field :lock_version, :integer, default: 0
     #field :user_id, :integer
 
     belongs_to :user ,Materia.Accounts.User
+    belongs_to :chat_message ,MateriaChat.Messages.ChatMessage
 
     timestamps()
   end
@@ -19,7 +20,7 @@ defmodule MateriaChat.Messages.ChatUnread do
     chat_unread
     |> cast(attrs, [:chat_message_id, :user_id, :is_unread, :lock_version])
     |> validate_required([:chat_message_id, :user_id])
-    |> unique_constraint([:chat_message_id, :user_id])
+    #|> unique_constraint([:chat_message_id, :user_id])
   end
 
   @doc false
@@ -28,7 +29,7 @@ defmodule MateriaChat.Messages.ChatUnread do
     |> cast(attrs, [:chat_message_id, :user_id, :is_unread, :lock_version])
     |> validate_required([:lock_version])
     |> optimistic_lock(:lock_version)
-    |> unique_constraint([:chat_message_id, :user_id])
+    #|> unique_constraint([:chat_message_id, :user_id])
   end
 
   def is_unread() do

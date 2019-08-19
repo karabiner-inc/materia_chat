@@ -4,7 +4,6 @@ defmodule MateriaChatWeb.RoomChannel do
   alias MateriaChat.Rooms
   alias MateriaChat.Rooms.ChatRoomMember
   alias MateriaChat.Messages
-  alias Guardian.Token.Jwt
   alias MateriaUtils.Calendar.CalendarUtil
 
   require Logger
@@ -12,7 +11,7 @@ defmodule MateriaChatWeb.RoomChannel do
     Logger.debug("#{__MODULE__} join. socket:#{inspect(socket)}")
     Logger.debug("#{__MODULE__} join. room_id:#{inspect(chat_room_id)}")
     Logger.debug("#{__MODULE__} join. params:#{inspect(params)}")
-    access_token = params["access_token"]
+    #access_token = params["access_token"]
     int_room_id = String.to_integer(chat_room_id)
     claims = socket.assigns.claims
     {:ok, sub} = Poison.decode(claims["sub"])
@@ -55,6 +54,7 @@ defmodule MateriaChatWeb.RoomChannel do
     Logger.debug("#{__MODULE__} handle_in. with msg chat_room_id:#{chat_room_id} from_user_id:#{from_user_id}")
 
     {:ok, message} = Messages.create_chat_message(%{chat_room_id: chat_room_id, from_user_id: from_user_id, body: body, send_datetime: CalendarUtil.now()})
+    {:ok, _unreads} = Messages.create_chat_unreads(chat_room_id, message.id)
 
     broadcast!(socket, "msg", %{id: message.id, body: message.body, from_user_id: message.from_user_id, send_datetime: CalendarUtil.now()})
     {:noreply, socket}
