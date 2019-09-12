@@ -46,6 +46,8 @@ defmodule MateriaChatWeb.Router do
     resources "/chat_room_members", ChatRoomMemberController, except: [:new, :edit]
     resources "/chat_messages", ChatMessageController, except: [:new, :edit]
     resources "/chat_unreads", ChatUnreadController, except: [:new, :edit]
+    resources "/client_logs", ClientLogController, except: [:new, :edit]
+    resources "/conn_logs", ConnLogController, except: [:new, :edit]
 
   end
 
@@ -55,8 +57,10 @@ defmodule MateriaChatWeb.Router do
     get "/my-chat-rooms", ChatRoomController, :list_my_chat_rooms
     post "/create-my-chat-room", ChatRoomController, :create_my_chat_room
     post "/add-my-chat-room-members", ChatRoomController, :add_my_chat_room_members
+    post "/update-my-chat-room-members", ChatRoomController, :update_my_chat_room_members
     post "/remove-my-chat-room-members", ChatRoomController, :remove_my_chat_room_members
     post "list-my-chat-message-recent", ChatMessageController, :list_my_chat_messages_recent
+    get "my-unread-messages", ChatUnreadController, :list_my_unread_messages
 
   end
 

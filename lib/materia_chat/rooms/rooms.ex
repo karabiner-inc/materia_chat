@@ -44,7 +44,7 @@ defmodule MateriaChat.Rooms do
 
     @repo
     |> EctoUtil.select_by_param(ChatRoom, params)
-    |> @repo.preload([members: :user])
+    |> @repo.preload([members: from(m in ChatRoomMember, where: m.status != ^ChatRoomMember.status.deleted, preload: :user)])
   end
 
   @doc """
@@ -62,7 +62,8 @@ defmodule MateriaChat.Rooms do
   def get_chat_room!(id) do
     ChatRoom
     |> @repo.get!(id)
-    |> @repo.preload([members: :user])
+    #|> @repo.preload([members: :user])
+    |> @repo.preload([members: from(m in ChatRoomMember, where: m.status != ^ChatRoomMember.status.deleted, preload: :user)])
 
   end
 
@@ -71,14 +72,14 @@ defmodule MateriaChat.Rooms do
 
   ## Examples
 
-  iex> params = %{ title: "test_create_chat_room_001", access_poricy: "public", }
-  iex> {:ok, room} = MateriaChat.Rooms.create_chat_room(params)
-  iex(8)> room.title
-  "test_create_chat_room_001"
-  iex(9)> room.access_poricy
-  "public"
-  iex(10)> room.status
-  1
+    iex> params = %{ title: "test_create_chat_room_001", access_poricy: "public", }
+    iex> {:ok, room} = MateriaChat.Rooms.create_chat_room(params)
+    iex> room.title
+    "test_create_chat_room_001"
+    iex> room.access_poricy
+    "public"
+    iex> room.status
+    1
 
   """
   def create_chat_room(attrs \\ %{}) do
@@ -92,11 +93,13 @@ defmodule MateriaChat.Rooms do
 
   ## Examples
 
-      iex> update_chat_room(chat_room, %{field: new_value})
-      {:ok, %ChatRoom{}}
-
-      iex> update_chat_room(chat_room, %{field: bad_value})
-      {:error, %Ecto.Changeset{}}
+    iex> params = %{title: "test_update_chat_room_001", access_poricy: "public", }
+    iex> {:ok, room} = MateriaChat.Rooms.create_chat_room(params)
+    iex> {:ok, updated_room} = MateriaChat.Rooms.update_chat_room(room, %{status: 9})
+    iex> updated_room.status
+    9
+    iex> updated_room.lock_version
+    1
 
   """
   def update_chat_room(%ChatRoom{} = chat_room, attrs) do
@@ -110,11 +113,11 @@ defmodule MateriaChat.Rooms do
 
   ## Examples
 
-      iex> delete_chat_room(chat_room)
-      {:ok, %ChatRoom{}}
-
-      iex> delete_chat_room(chat_room)
-      {:error, %Ecto.Changeset{}}
+    iex> params = %{title: "test_delete_chat_room_001", access_poricy: "public", }
+    iex> {:ok, room} = MateriaChat.Rooms.create_chat_room(params)
+    iex> {:ok, deleted_room} = MateriaChat.Rooms.delete_chat_room(room)
+    iex> MateriaChat.Rooms.list_chat_rooms_by_params(%{"and" => [%{"id" => room.id}]})
+    []
 
   """
   def delete_chat_room(%ChatRoom{} = chat_room) do
@@ -126,8 +129,8 @@ defmodule MateriaChat.Rooms do
 
   ## Examples
 
-      iex> list_chat_room_members()
-      [%ChatRoomMember{}, ...]
+    iex> MateriaChat.Rooms.list_chat_room_members() |> length() >= 2
+    true
 
   """
   def list_chat_room_members do
@@ -136,10 +139,21 @@ defmodule MateriaChat.Rooms do
 
   @doc """
 
+  iex> [member] = MateriaChat.Rooms.list_chat_room_members_by_params(%{"and" => [%{"id" => 1}]})
+  iex> member.user_id
+  1
+
   """
   def list_chat_room_members_by_params(params) do
+    and_params = params
+    |> Map.get("and")
+    |> Enum.concat([%{"status" => ChatRoomMember.status.active}])
+
+    added_params = params
+    |> Map.put("and", and_params)
+
     @repo
-    |> EctoUtil.select_by_param(ChatRoomMember, params)
+    |> EctoUtil.select_by_param(ChatRoomMember, added_params)
     |> @repo.preload(:user)
   end
 
@@ -150,11 +164,9 @@ defmodule MateriaChat.Rooms do
 
   ## Examples
 
-      iex> get_chat_room_member!(123)
-      %ChatRoomMember{}
-
-      iex> get_chat_room_member!(456)
-      ** (Ecto.NoResultsError)
+  iex> member = MateriaChat.Rooms.get_chat_room_member!(1)
+  iex> member.user_id
+  1
 
   """
   def get_chat_room_member!(id), do: @repo.get!(ChatRoomMember, id)
@@ -164,11 +176,11 @@ defmodule MateriaChat.Rooms do
 
   ## Examples
 
-      iex> create_chat_room_member(%{field: value})
-      {:ok, %ChatRoomMember{}}
-
-      iex> create_chat_room_member(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
+  iex> {:ok, member} = MateriaChat.Rooms.create_chat_room_member(%{chat_room_id: 1, user_id: 1 })
+  iex> member.is_admin
+  0
+  iex> member.status
+  1
 
   """
   def create_chat_room_member(attrs \\ %{}) do
@@ -182,11 +194,10 @@ defmodule MateriaChat.Rooms do
 
   ## Examples
 
-      iex> update_chat_room_member(chat_room_member, %{field: new_value})
-      {:ok, %ChatRoomMember{}}
-
-      iex> update_chat_room_member(chat_room_member, %{field: bad_value})
-      {:error, %Ecto.Changeset{}}
+    iex> {:ok, member} = MateriaChat.Rooms.create_chat_room_member(%{chat_room_id: 1, user_id: 2 })
+    iex> {:ok, update_member} = MateriaChat.Rooms.update_chat_room_member(member, %{is_admin: 1})
+    iex> update_member.is_admin
+    1
 
   """
   def update_chat_room_member(%ChatRoomMember{} = chat_room_member, attrs) do
@@ -200,11 +211,10 @@ defmodule MateriaChat.Rooms do
 
   ## Examples
 
-      iex> delete_chat_room_member(chat_room_member)
-      {:ok, %ChatRoomMember{}}
-
-      iex> delete_chat_room_member(chat_room_member)
-      {:error, %Ecto.Changeset{}}
+    iex> {:ok, member} = MateriaChat.Rooms.create_chat_room_member(%{chat_room_id: 1, user_id: 2 })
+    iex> {:ok, deleted_member} = MateriaChat.Rooms.delete_chat_room_member(member)
+    iex> MateriaChat.Rooms.list_chat_room_members_by_params(%{"and" => [%{"id" => member.id}]})
+    []
 
   """
   def delete_chat_room_member(%ChatRoomMember{} = chat_room_member) do
@@ -212,9 +222,11 @@ defmodule MateriaChat.Rooms do
   end
 
   @doc """
+
   iex> rooms = MateriaChat.Rooms.list_my_chat_rooms(1)
   iex> length(rooms)
   1
+
   """
   def list_my_chat_rooms(user_id) do
 
@@ -290,10 +302,15 @@ defmodule MateriaChat.Rooms do
 
   add chat room members.
 
-  iex> params = %{ "title" => "test add_my_chat_room_members_001", "access_poricy" => "private", "members" => [%{"user_id" => 2, "is_admin" => 2}]}
+  iex> params = %{ "title" => "test add_my_chat_room_members_001", "access_poricy" => "private", "members" => [%{"user_id" => 2, "is_admin" => 1}]}
   iex> {:ok, room} = MateriaChat.Rooms.create_my_chat_room(%{}, 1, params)
   iex> length(room.members)
   2
+  iex> params = [%{"user_id" => 2, "is_admin" => 0}]
+  iex> {:ok, room} = MateriaChat.Rooms.update_my_chat_room_members(%{}, 1, room.id, params)
+  iex> user_2 = room.members |> Enum.filter(fn(member)-> member.user_id == 2 end) |> List.first
+  iex> user_2.is_admin
+  0
   iex> params = [%{"user_id" => 2,}]
   iex> {:ok, room} = MateriaChat.Rooms.remove_my_chat_room_members(%{}, 1, room.id, params)
   iex> Enum.filter(room.members, fn(member) -> member.status == 1 end) |> length()
@@ -331,7 +348,7 @@ defmodule MateriaChat.Rooms do
         [chat_room_member] = chat_room_members
         if chat_room_member.status == ChatRoomMember.status.active do
           Logger.debug("#{__MODULE__} add_my_chat_room_members. target_user_id:#{target_user_id} chat_room_id:#{chat_room_id} chat_room_member.status: #{chat_room_member.status} == #{ChatRoomMember.status.active}")
-          raise BusinessError, message: "user_id:#{target_user_id} was member at chat_room_id:#{chat_room_id}."
+          raise BusinessError, message: "user_id:#{target_user_id} wasn't administrator at chat_room_id:#{chat_room_id}."
         else
           puted_params = params
           |> Map.put("status", ChatRoomMember.status.active)
@@ -348,7 +365,34 @@ defmodule MateriaChat.Rooms do
 
   @doc """
 
-  delete chat room members.
+  update chat room members.
+
+  see add_my_chat_room_members examples.
+
+  """
+  def update_my_chat_room_members(_result, user_id, chat_room_id, params_list) do
+
+    _chat_room = check_and_get_chat_room!(user_id, chat_room_id)
+    params_list
+    |> Enum.map(fn(params) ->
+      user_id = params["user_id"]
+      if user_id == nil do
+        raise BusinessError, message: "user_id is required"
+      end
+      deleted_params = Map.delete(params, "user_id")
+      chat_room_member = check_and_get_chat_room_member!(chat_room_id, user_id)
+      {:ok, _chat_room_member} = update_chat_room_member(chat_room_member, deleted_params)
+    end)
+
+    chat_room = get_chat_room!(chat_room_id)
+
+    {:ok, chat_room}
+
+  end
+
+  @doc """
+
+  remove chat room members.
 
   see add_my_chat_room_members examples.
 
@@ -381,16 +425,10 @@ defmodule MateriaChat.Rooms do
   raise error.
 
   iex> MateriaChat.Rooms.check_and_get_chat_room!(2, 1)
-  * (Materia.Errors.BusinessError) user_id: 2 is not admin member
+  ** (Materia.Errors.BusinessError) user_id: 2 is not admin member.
 
   """
   def check_and_get_chat_room!(user_id, chat_room_id) do
-
-    #chat_room_id = params["chat_room_id"]
-#
-    #if chat_room_id == nil do
-    #  raise BusinessError, message: "chat_room_id is required"
-    #end
 
     chat_room = get_chat_room!(chat_room_id)
 

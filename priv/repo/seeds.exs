@@ -67,7 +67,40 @@ jsons = TsvParser.parse_tsv_to_json(members, "id")
       |> Rooms.create_chat_room_member()
     end)
 
+alias MateriaChat.Messages
 
+chat_messages = "
+id	chat_room_id	from_user_id	status	body	send_datetime	lock_version
+1	1	1	1	hello! everyone.	2019-03-03 00:00:00	0
+2	1	2	1	Hy! hogehoge. How are you?	2019-03-03 00:00:00	0
+3	1	1	1	not too bad.	2019-03-03 00:00:00	0
+"
+
+jsons = TsvParser.parse_tsv_to_json(chat_messages, "id")
+
+    results = jsons
+    |> Enum.map(fn(json) ->
+      {:ok, result} = json
+      |> Messages.create_chat_message()
+    end)
+
+chat_unreads = "
+id	chat_message_id	user_id	is_unread
+1	1	1	1
+2	1	2	1
+3	2	1	1
+4	2	2	1
+5	3	1	1
+6	3	2	1
+"
+
+jsons = TsvParser.parse_tsv_to_json(chat_unreads, "id")
+
+    results = jsons
+    |> Enum.map(fn(json) ->
+      {:ok, result} = json
+      |> Messages.create_chat_unread()
+    end)
 
 
 

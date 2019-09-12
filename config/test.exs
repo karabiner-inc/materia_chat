@@ -11,7 +11,7 @@ config :materia_chat, MateriaChatWeb.Test.Endpoint,
   watchers: []
 
 # Print only warnings and errors during test
-config :logger, level: :debug
+config :logger, level: :info
 
 # Configure your database
 config :materia_chat, MateriaChat.Test.Repo,

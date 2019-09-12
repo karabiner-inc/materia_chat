@@ -50,4 +50,10 @@ defmodule MateriaChatWeb.ChatMessageController do
     chat_messages = Messages.list_my_chat_messages_recent(chat_room_id, id, limit_count, first_message_id)
     render(conn, "index.json", chat_messages: chat_messages)
   end
+
+  def list_my_unread_messages(conn) do
+    user_id = ControllerBase.get_user_id(conn)
+    unread_messages = Messages.list_my_unread_messages(user_id)
+    render(conn, "unread_messages.json", unread_messages: unread_messages)
+  end
 end

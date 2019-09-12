@@ -95,3 +95,6 @@ msgstr ""
 
 msgid "must be equal to %{number}"
 msgstr ""
+
+msgid "user_id:%{number} was member at chat_room_id:%{number}."
+msgstr ""
