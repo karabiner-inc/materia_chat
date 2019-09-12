@@ -5,6 +5,7 @@ use Mix.Config
 config :materia_chat, MateriaChatWeb.Test.Endpoint,
   http: [port: 4001],
   #server: false,
+  server: true,
   debug_errors: true,
   code_reloader: false,
   check_origin: false,

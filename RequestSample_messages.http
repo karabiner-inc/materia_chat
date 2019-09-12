@@ -2,12 +2,12 @@
 # APIリクエストサンプル集
 #
 ############################################
-
-@url = http://localhost:4000
+@url = http://localhost:4001
 #@url = https://
+@token = Bearer {{signin.response.body.$.access_token}}
 
-
-###ログイン(ユーザー認証)
+## サインイン
+# @name signin
 POST {{url}}/api/sign-in HTTP/1.1
 Content-Type: application/json
 
@@ -15,10 +15,6 @@ Content-Type: application/json
     "email": "fugafuga@example.com", 
     "password": "fugafuga"
   }
-
-
-@token = Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJNYXRlcmlhIiwiZW1haWwiOiJmdWdhZnVnYUBleGFtcGxlLmNvbSIsImV4cCI6MTU2NjM3MzEzOCwiaWF0IjoxNTY2MzcyNTM4LCJpc3MiOiJNYXRlcmlhIiwianRpIjoiMjJkOGVlMjgtNjhlMi00Yjg5LTlmMjUtODg2MmFmYTc2ZGJmIiwibmJmIjoxNTY2MzcyNTM3LCJzdWIiOiJ7XCJ1c2VyX2lkXCI6Mn0iLCJ0eXAiOiJhY2Nlc3MifQ.iQzT5a6b-g9FHr4zFOLohEq5aYhkdrUXHEMe3HJ6zvo
-
 ### 自分の直近limmit_count件のメッセージを取得
 
 POST {{url}}/api/list-my-chat-message-recent HTTP/1.1
