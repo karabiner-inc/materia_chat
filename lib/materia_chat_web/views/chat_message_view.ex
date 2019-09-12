@@ -2,6 +2,8 @@ defmodule MateriaChatWeb.ChatMessageView do
   use MateriaChatWeb, :view
   alias MateriaChatWeb.ChatMessageView
 
+  alias MateriaChatWeb.ChatUnreadView
+
   def render("index.json", %{chat_messages: chat_messages}) do
     render_many(chat_messages, ChatMessageView, "chat_message.json")
   end
@@ -21,5 +23,11 @@ defmodule MateriaChatWeb.ChatMessageView do
       lock_version: chat_message.lock_version,
       send_datetime: chat_message.send_datetime,
     }
+    result_map =
+      if Map.has_key?(chat_message, :chat_unreads) == true and chat_message.chat_unreads != nil and Ecto.assoc_loaded?(chat_message.chat_unreads) do
+        Map.put(result_map, :chat_unreads, ChatUnreadView.render("index.json", %{chat_unreads: chat_message.chat_unreads}))
+      else
+        Map.put(result_map, :chat_unreads, [])
+      end
   end
 end

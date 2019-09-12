@@ -47,8 +47,11 @@ config :guardian, Guardian.DB,
   #token_types: ["refresh_token"], # store all token types if not set
   sweep_interval: 60 # default: 60 minutes
 
-# Configures gettext for Materia
+# Configures repo for Materia
 config :materia, :repo, MateriaChat.Test.Repo
+
+# Configures gettext for Materia
+config :materia, gettext: MateriaChatWeb.Gettext
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

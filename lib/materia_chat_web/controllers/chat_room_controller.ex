@@ -58,6 +58,11 @@ defmodule MateriaChatWeb.ChatRoomController do
     ControllerBase.transaction_flow(conn, :chat_room, Rooms, :add_my_chat_room_members, [id, chat_room_id, members])
   end
 
+  def update_my_chat_room_members(conn, %{"chat_room_id" => chat_room_id, "members" => members}) do
+    id = ControllerBase.get_user_id(conn)
+    ControllerBase.transaction_flow(conn, :chat_room, Rooms, :update_my_chat_room_members, [id, chat_room_id, members])
+  end
+
   def remove_my_chat_room_members(conn, %{"chat_room_id" => chat_room_id, "members" => members}) do
     id = ControllerBase.get_user_id(conn)
     ControllerBase.transaction_flow(conn, :chat_room, Rooms, :remove_my_chat_room_members, [id, chat_room_id, members])
