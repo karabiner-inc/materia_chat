@@ -6,7 +6,7 @@ defmodule MateriaChatWeb.ChatRoomController do
 
   alias MateriaWeb.ControllerBase
 
-  action_fallback MateriaWeb.FallbackController
+  action_fallback(MateriaWeb.FallbackController)
 
   def index(conn, _params) do
     chat_rooms = Rooms.list_chat_rooms()
@@ -37,6 +37,7 @@ defmodule MateriaChatWeb.ChatRoomController do
 
   def delete(conn, %{"id" => id}) do
     chat_room = Rooms.get_chat_room!(id)
+
     with {:ok, %ChatRoom{}} <- Rooms.delete_chat_room(chat_room) do
       send_resp(conn, :no_content, "")
     end

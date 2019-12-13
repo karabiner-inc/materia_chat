@@ -26,13 +26,13 @@ defmodule MateriaChatWeb.ConnCase do
     end
   end
 
-
   setup tags do
     :ok = Ecto.Adapters.SQL.Sandbox.checkout(MateriaChat.Test.Repo)
+
     unless tags[:async] do
       Ecto.Adapters.SQL.Sandbox.mode(MateriaChat.Test.Repo, {:shared, self()})
     end
+
     {:ok, conn: Phoenix.ConnTest.build_conn()}
   end
-
 end

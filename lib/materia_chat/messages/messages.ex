@@ -178,24 +178,26 @@ defmodule MateriaChat.Messages do
   iex> MateriaChat.Messages.list_my_chat_messages_recent(1, 1, 2, 100)
   """
   def list_my_chat_messages_recent(chat_room_id, user_id, limit_count, first_message_id \\ nil) do
-
     Rooms.check_and_get_chat_room_member!(chat_room_id, user_id)
 
-    active_status = ChatMessage.status.active
-    query = from m in ChatMessage,
-       where: m.chat_room_id == ^chat_room_id and m.status == ^active_status,
-       order_by: [desc: m.id],
-       limit: ^limit_count,
-       select: m
+    active_status = ChatMessage.status().active
+
     query =
-    if first_message_id != nil do
-      where(query, [m], m.id < ^first_message_id)
-    else
-      query
-    end
+      from(
+        m in ChatMessage,
+        where: m.chat_room_id == ^chat_room_id and m.status == ^active_status,
+        order_by: [desc: m.id],
+        limit: ^limit_count,
+        select: m
+      )
+
+    query =
+      if first_message_id != nil do
+        where(query, [m], m.id < ^first_message_id)
+      else
+        query
+      end
+
     @repo.all(query)
-
   end
-
-
 end

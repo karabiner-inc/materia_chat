@@ -4,7 +4,7 @@ defmodule MateriaChatWeb.ChatUnreadController do
   alias MateriaChat.Messages
   alias MateriaChat.Messages.ChatUnread
 
-  action_fallback MateriaChatWeb.FallbackController
+  action_fallback(MateriaChatWeb.FallbackController)
 
   def index(conn, _params) do
     chat_unreads = Messages.list_chat_unreads()
@@ -35,6 +35,7 @@ defmodule MateriaChatWeb.ChatUnreadController do
 
   def delete(conn, %{"id" => id}) do
     chat_unread = Messages.get_chat_unread!(id)
+
     with {:ok, %ChatUnread{}} <- Messages.delete_chat_unread(chat_unread) do
       send_resp(conn, :no_content, "")
     end

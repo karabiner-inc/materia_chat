@@ -2,14 +2,13 @@ defmodule MateriaChat.Rooms.ChatRoom do
   use Ecto.Schema
   import Ecto.Changeset
 
-
   schema "chat_rooms" do
-    field :access_poricy, :string, default: "private"
-    field :lock_version, :integer, default: 0
-    field :status, :integer, default: 1
-    field :title, :string
+    field(:access_poricy, :string, default: "private")
+    field(:lock_version, :integer, default: 0)
+    field(:status, :integer, default: 1)
+    field(:title, :string)
 
-    has_many :members, MateriaChat.Rooms.ChatRoomMember
+    has_many(:members, MateriaChat.Rooms.ChatRoomMember)
 
     timestamps()
   end
@@ -31,16 +30,14 @@ defmodule MateriaChat.Rooms.ChatRoom do
   def access_poricy() do
     %{
       private: "private",
-      public: "public",
+      public: "public"
     }
   end
 
   def status() do
     %{
       active: 1,
-      deleted: 9,
+      deleted: 9
     }
   end
 end
-
-

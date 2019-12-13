@@ -2,16 +2,15 @@ defmodule MateriaChat.Messages.ChatMessage do
   use Ecto.Schema
   import Ecto.Changeset
 
-
   schema "chat_messages" do
-    field :body, :string
-    field :chat_room_id, :integer
-    #field :from_user_id, :integer
-    field :lock_version, :integer, default: 0
-    field :status, :integer, default: 1
-    field :send_datetime, :utc_datetime
+    field(:body, :string)
+    field(:chat_room_id, :integer)
+    # field :from_user_id, :integer
+    field(:lock_version, :integer, default: 0)
+    field(:status, :integer, default: 1)
+    field(:send_datetime, :utc_datetime)
 
-    belongs_to :from_user ,Materia.Accounts.User, [foreign_key: :from_user_id]
+    belongs_to(:from_user, Materia.Accounts.User, foreign_key: :from_user_id)
 
     timestamps()
   end
@@ -34,7 +33,7 @@ defmodule MateriaChat.Messages.ChatMessage do
   def status() do
     %{
       active: 1,
-      deleted: 9,
+      deleted: 9
     }
   end
 end

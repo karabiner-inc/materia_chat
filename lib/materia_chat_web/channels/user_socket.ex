@@ -7,10 +7,10 @@ defmodule MateriaChatWeb.UserSocket do
   require Logger
 
   ## Channels
-   channel "room:*", MateriaChatWeb.RoomChannel
+  channel("room:*", MateriaChatWeb.RoomChannel)
 
   ## Transports
-  transport :websocket, Phoenix.Transports.WebSocket
+  transport(:websocket, Phoenix.Transports.WebSocket)
   # transport :longpoll, Phoenix.Transports.LongPoll
 
   # Socket params are passed from the client and can
@@ -25,23 +25,21 @@ defmodule MateriaChatWeb.UserSocket do
   # See `Phoenix.Token` documentation for examples in
   # performing token verification on connect.
   def connect(params, socket) do
-    #{:ok, socket}
+    # {:ok, socket}
     Logger.debug("#{__MODULE__} connect. params:#{inspect(params)} socket:#{inspect(socket)}")
-    #Logger.debug("#{__MODULE__} connect. token:#{inspect(token)}")
-    #try do
-      access_token = params["access_token"]
-      {:ok, claims } = Jwt.decode_token(UserAuthenticator, access_token)
-      Logger.debug("#{__MODULE__} connect. claims:#{inspect(claims)}")
-      {:ok, claims} = UserAuthenticator.on_verify(claims, access_token, %{})
-      {:ok, assign(socket, :claims, claims)}
-    #rescue
+    # Logger.debug("#{__MODULE__} connect. token:#{inspect(token)}")
+    # try do
+    access_token = params["access_token"]
+    {:ok, claims} = Jwt.decode_token(UserAuthenticator, access_token)
+    Logger.debug("#{__MODULE__} connect. claims:#{inspect(claims)}")
+    {:ok, claims} = UserAuthenticator.on_verify(claims, access_token, %{})
+    {:ok, assign(socket, :claims, claims)}
+    # rescue
     #  e ->
     #    Logger.debug("#{__MODULE__} connect. exception occered.")
     #    Logger.debug("inspect(e)")
     #    {:error, "unauthenticated"}
-    #end
-
-
+    # end
   end
 
   # Socket id's are topics that allow you to identify all sockets for a given user:
