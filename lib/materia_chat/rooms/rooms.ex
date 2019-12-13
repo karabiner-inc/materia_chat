@@ -41,10 +41,9 @@ defmodule MateriaChat.Rooms do
 
   """
   def list_chat_rooms_by_params(params) do
-
     @repo
     |> EctoUtil.select_by_param(ChatRoom, params)
-    |> @repo.preload([members: :user])
+    |> @repo.preload(members: :user)
   end
 
   @doc """
@@ -62,8 +61,7 @@ defmodule MateriaChat.Rooms do
   def get_chat_room!(id) do
     ChatRoom
     |> @repo.get!(id)
-    |> @repo.preload([members: :user])
-
+    |> @repo.preload(members: :user)
   end
 
   @doc """
@@ -217,18 +215,20 @@ defmodule MateriaChat.Rooms do
   1
   """
   def list_my_chat_rooms(user_id) do
+    active_status = ChatRoomMember.status().active
 
-    active_status = ChatRoomMember.status.active
-    query = from m in ChatRoomMember,
-      where: m.user_id == ^user_id and m.status == ^active_status,
-      join: r in ChatRoom,
-      on: m.chat_room_id == r.id,
-      select: r
+    query =
+      from(
+        m in ChatRoomMember,
+        where: m.user_id == ^user_id and m.status == ^active_status,
+        join: r in ChatRoom,
+        on: m.chat_room_id == r.id,
+        select: r
+      )
 
     query
     |> @repo.all()
-    |> @repo.preload([members: :user])
-
+    |> @repo.preload(members: :user)
   end
 
   @doc """
@@ -242,7 +242,6 @@ defmodule MateriaChat.Rooms do
 
   """
   def create_my_chat_room(_result, user_id, params) do
-
     title = params["title"]
     access_poricy = params["access_poricy"]
     members = params["members"]
@@ -252,39 +251,41 @@ defmodule MateriaChat.Rooms do
 
     if members != nil do
       members
-      |> Enum.reject(fn(member) -> member["user_id"] == user_id end)
-      |> Enum.map(fn(member) ->
-        {:ok, _room_member} = create_chat_room_member(%{chat_room_id: room.id, user_id: member["user_id"], is_admin: member["is_admin"]})
+      |> Enum.reject(fn member -> member["user_id"] == user_id end)
+      |> Enum.map(fn member ->
+        {:ok, _room_member} =
+          create_chat_room_member(%{chat_room_id: room.id, user_id: member["user_id"], is_admin: member["is_admin"]})
       end)
     end
 
-    replaced_room = room
-    |> @repo.preload([members: :user])
-    {:ok, replaced_room}
+    replaced_room =
+      room
+      |> @repo.preload(members: :user)
 
+    {:ok, replaced_room}
   end
 
-#  @doc """
-#
-#  iex> members = MateriaChat.Rooms.list_chat_room_members_by_chat_room_id(1)
-#
-#  """
-#  def list_chat_room_members_by_chat_room_id(chat_room_id) do
-#
-#    #query = from c in ChatRoomMember
-#    #  where: c.chat_room_id == ^chat_room_id
-#    #  join: u in User on: u.id = c.user_id
-#
-#
-#    query = from(c in ChatRoomMember)
-#    |> where([c], c.chat_room_id == ^chat_room_id)
-#    |> join(:inner, [c], u in User, c.user_id == u.id)
-#    |> select([c, u], {u, c.is_admin})
-#    |> order_by([c], :user_id)
-#
-#    @repo.all(query)
-#
-#  end
+  #  @doc """
+  #
+  #  iex> members = MateriaChat.Rooms.list_chat_room_members_by_chat_room_id(1)
+  #
+  #  """
+  #  def list_chat_room_members_by_chat_room_id(chat_room_id) do
+  #
+  #    #query = from c in ChatRoomMember
+  #    #  where: c.chat_room_id == ^chat_room_id
+  #    #  join: u in User on: u.id = c.user_id
+  #
+  #
+  #    query = from(c in ChatRoomMember)
+  #    |> where([c], c.chat_room_id == ^chat_room_id)
+  #    |> join(:inner, [c], u in User, c.user_id == u.id)
+  #    |> select([c, u], {u, c.is_admin})
+  #    |> order_by([c], :user_id)
+  #
+  #    @repo.all(query)
+  #
+  #  end
 
   @doc """
 
@@ -305,36 +306,48 @@ defmodule MateriaChat.Rooms do
 
   """
   def add_my_chat_room_members(_result, user_id, chat_room_id, params_list) do
-
     chat_room = check_and_get_chat_room!(user_id, chat_room_id)
 
     params_list
-    |> Enum.map(fn(params) ->
+    |> Enum.map(fn params ->
       target_user_id = params["user_id"]
+
       if target_user_id == nil do
         raise BusinessError, message: "user_id is required"
       end
 
-      target_users = Accounts.list_users_by_params(%{"and" => [%{"id" => target_user_id}, %{"status" => User.status.activated}]})
+      target_users =
+        Accounts.list_users_by_params(%{"and" => [%{"id" => target_user_id}, %{"status" => User.status().activated}]})
 
       if length(target_users) != 1 do
         raise BusinessError, message: "user_id:#{target_user_id} is not activated."
       end
 
-      chat_room_members = list_chat_room_members_by_params(%{"and" => [%{"chat_room_id" => chat_room_id}, %{"user_id" => target_user_id}]})
+      chat_room_members =
+        list_chat_room_members_by_params(%{"and" => [%{"chat_room_id" => chat_room_id}, %{"user_id" => target_user_id}]})
 
       if length(chat_room_members) == 0 do
-        puted_params = params
-        |> Map.put("chat_room_id", chat_room_id)
+        puted_params =
+          params
+          |> Map.put("chat_room_id", chat_room_id)
+
         {:ok, _chat_room_member} = create_chat_room_member(puted_params)
       else
         [chat_room_member] = chat_room_members
-        if chat_room_member.status == ChatRoomMember.status.active do
-          Logger.debug("#{__MODULE__} add_my_chat_room_members. target_user_id:#{target_user_id} chat_room_id:#{chat_room_id} chat_room_member.status: #{chat_room_member.status} == #{ChatRoomMember.status.active}")
+
+        if chat_room_member.status == ChatRoomMember.status().active do
+          Logger.debug(
+            "#{__MODULE__} add_my_chat_room_members. target_user_id:#{target_user_id} chat_room_id:#{chat_room_id} chat_room_member.status: #{
+              chat_room_member.status
+            } == #{ChatRoomMember.status().active}"
+          )
+
           raise BusinessError, message: "user_id:#{target_user_id} was member at chat_room_id:#{chat_room_id}."
         else
-          puted_params = params
-          |> Map.put("status", ChatRoomMember.status.active)
+          puted_params =
+            params
+            |> Map.put("status", ChatRoomMember.status().active)
+
           {:ok, _chat_room_member} = update_chat_room_member(chat_room_member, puted_params)
         end
       end
@@ -343,7 +356,6 @@ defmodule MateriaChat.Rooms do
     chat_room = get_chat_room!(chat_room.id)
 
     {:ok, chat_room}
-
   end
 
   @doc """
@@ -355,22 +367,23 @@ defmodule MateriaChat.Rooms do
   """
 
   def remove_my_chat_room_members(_result, user_id, chat_room_id, params_list) do
-
     _chat_room = check_and_get_chat_room!(user_id, chat_room_id)
+
     params_list
-    |> Enum.map(fn(params) ->
+    |> Enum.map(fn params ->
       user_id = params["user_id"]
+
       if user_id == nil do
         raise BusinessError, message: "user_id is required"
       end
+
       chat_room_member = check_and_get_chat_room_member!(chat_room_id, user_id)
-      {:ok, _chat_room_member} = update_chat_room_member(chat_room_member, %{status: ChatRoomMember.status.deleted})
+      {:ok, _chat_room_member} = update_chat_room_member(chat_room_member, %{status: ChatRoomMember.status().deleted})
     end)
 
     chat_room = get_chat_room!(chat_room_id)
 
     {:ok, chat_room}
-
   end
 
   @doc """
@@ -385,23 +398,29 @@ defmodule MateriaChat.Rooms do
 
   """
   def check_and_get_chat_room!(user_id, chat_room_id) do
-
-    #chat_room_id = params["chat_room_id"]
-#
-    #if chat_room_id == nil do
+    # chat_room_id = params["chat_room_id"]
+    #
+    # if chat_room_id == nil do
     #  raise BusinessError, message: "chat_room_id is required"
-    #end
+    # end
 
     chat_room = get_chat_room!(chat_room_id)
 
-    admin_member =  list_chat_room_members_by_params(%{"and" => [%{"chat_room_id" => chat_room_id}, %{"user_id" => user_id}, %{"is_admin" => ChatRoomMember.is_admin.admin}, %{"status" => ChatRoomMember.status.active}]})
+    admin_member =
+      list_chat_room_members_by_params(%{
+        "and" => [
+          %{"chat_room_id" => chat_room_id},
+          %{"user_id" => user_id},
+          %{"is_admin" => ChatRoomMember.is_admin().admin},
+          %{"status" => ChatRoomMember.status().active}
+        ]
+      })
 
-    if chat_room.access_poricy == ChatRoom.access_poricy.private and admin_member == [] do
+    if chat_room.access_poricy == ChatRoom.access_poricy().private and admin_member == [] do
       raise BusinessError, message: "user_id: #{user_id} is not admin member."
     end
 
     chat_room
-
   end
 
   @doc """
@@ -416,15 +435,20 @@ defmodule MateriaChat.Rooms do
 
   """
   def check_and_get_chat_room_member!(chat_room_id, user_id) do
+    chat_room_members =
+      list_chat_room_members_by_params(%{
+        "and" => [
+          %{"chat_room_id" => chat_room_id},
+          %{"user_id" => user_id},
+          %{"status" => ChatRoomMember.status().active}
+        ]
+      })
 
-    chat_room_members = list_chat_room_members_by_params(%{"and" => [%{"chat_room_id" => chat_room_id}, %{"user_id" => user_id}, %{"status" => ChatRoomMember.status.active}]})
     if length(chat_room_members) != 1 do
       raise BusinessError, message: "user_id: #{user_id} is not member in chat_room_id: #{chat_room_id}"
     end
+
     [chat_room_member] = chat_room_members
     chat_room_member
-
   end
-
-
 end

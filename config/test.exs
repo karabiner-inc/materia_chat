@@ -26,11 +26,12 @@ config :materia_chat, repo: MateriaChat.Test.Repo
 
 # Configures GuardianDB
 config :guardian, Guardian.DB,
- repo: MateriaChat.Test.Repo,
- schema_name: "guardian_tokens", # default
-#token_types: ["refresh_token"], # store all token types if not set
- sweep_interval: 60 # default: 60 minutes
+  repo: MateriaChat.Test.Repo,
+  # default
+  schema_name: "guardian_tokens",
+  # token_types: ["refresh_token"], # store all token types if not set
+  # default: 60 minutes
+  sweep_interval: 60
 
 # Configures MateriUtils
- config :materia_utils,
-  test_base_datetime: "2019-03-03T00:00:00.000Z"
+config :materia_utils, test_base_datetime: "2019-03-03T00:00:00.000Z"

@@ -3,15 +3,14 @@ defmodule MateriaChat.Repo.Migrations.CreateChatRooms do
 
   def change do
     create table(:chat_rooms) do
-      add :title, :string
-      add :access_poricy, :string
-      add :status, :integer
-      add :lock_version, :bigint
+      add(:title, :string)
+      add(:access_poricy, :string)
+      add(:status, :integer)
+      add(:lock_version, :bigint)
 
       timestamps()
     end
 
-    create index(:chat_rooms, [:status])
-
+    create(index(:chat_rooms, [:status]))
   end
 end

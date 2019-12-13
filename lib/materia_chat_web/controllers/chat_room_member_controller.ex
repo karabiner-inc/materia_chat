@@ -4,7 +4,7 @@ defmodule MateriaChatWeb.ChatRoomMemberController do
   alias MateriaChat.Rooms
   alias MateriaChat.Rooms.ChatRoomMember
 
-  action_fallback MateriaChatWeb.FallbackController
+  action_fallback(MateriaChatWeb.FallbackController)
 
   def index(conn, _params) do
     chat_room_members = Rooms.list_chat_room_members()
@@ -28,13 +28,15 @@ defmodule MateriaChatWeb.ChatRoomMemberController do
   def update(conn, %{"id" => id, "chat_room_member" => chat_room_member_params}) do
     chat_room_member = Rooms.get_chat_room_member!(id)
 
-    with {:ok, %ChatRoomMember{} = chat_room_member} <- Rooms.update_chat_room_member(chat_room_member, chat_room_member_params) do
+    with {:ok, %ChatRoomMember{} = chat_room_member} <-
+           Rooms.update_chat_room_member(chat_room_member, chat_room_member_params) do
       render(conn, "show.json", chat_room_member: chat_room_member)
     end
   end
 
   def delete(conn, %{"id" => id}) do
     chat_room_member = Rooms.get_chat_room_member!(id)
+
     with {:ok, %ChatRoomMember{}} <- Rooms.delete_chat_room_member(chat_room_member) do
       send_resp(conn, :no_content, "")
     end

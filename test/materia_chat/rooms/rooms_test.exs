@@ -7,7 +7,12 @@ defmodule MateriaChat.RoomsTest do
     alias MateriaChat.Rooms.ChatRoom
 
     @valid_attrs %{access_poricy: "some access_poricy", lock_version: 42, status: 42, title: "some title"}
-    @update_attrs %{access_poricy: "some updated access_poricy", lock_version: 43, status: 43, title: "some updated title"}
+    @update_attrs %{
+      access_poricy: "some updated access_poricy",
+      lock_version: 43,
+      status: 43,
+      title: "some updated title"
+    }
     @invalid_attrs %{access_poricy: nil, lock_version: nil, status: nil, title: nil}
 
     def chat_room_fixture(attrs \\ %{}) do
@@ -73,7 +78,12 @@ defmodule MateriaChat.RoomsTest do
     alias MateriaChat.Rooms.ChatRoomMember
 
     @valid_attrs %{chat_room_id: "some chat_room_id", is_admin: 42, lock_version: 42, user_id: "some user_id"}
-    @update_attrs %{chat_room_id: "some updated chat_room_id", is_admin: 43, lock_version: 43, user_id: "some updated user_id"}
+    @update_attrs %{
+      chat_room_id: "some updated chat_room_id",
+      is_admin: 43,
+      lock_version: 43,
+      user_id: "some updated user_id"
+    }
     @invalid_attrs %{chat_room_id: nil, is_admin: nil, lock_version: nil, user_id: nil}
 
     def chat_room_member_fixture(attrs \\ %{}) do

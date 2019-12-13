@@ -7,11 +7,12 @@ defmodule MateriaChat.Mixfile do
       version: "0.1.0",
       elixir: "~> 1.6",
       test_coverage: [tool: ExCoveralls],
-      preferred_cli_env: ["coveralls": :test, "coveralls.detail": :test, "coveralls.post": :test, "coveralls.html": :test],
-      description: "This library is a summary of the functions that are generally required for E-Commerce service development.",
-      elixirc_paths: elixirc_paths(Mix.env),
-      compilers: [:phoenix, :gettext] ++ Mix.compilers,
-      start_permanent: Mix.env == :prod,
+      preferred_cli_env: [coveralls: :test, "coveralls.detail": :test, "coveralls.post": :test, "coveralls.html": :test],
+      description:
+        "This library is a summary of the functions that are generally required for E-Commerce service development.",
+      elixirc_paths: elixirc_paths(Mix.env()),
+      compilers: [:phoenix, :gettext] ++ Mix.compilers(),
+      start_permanent: Mix.env() == :prod,
       aliases: aliases(),
       package: [
         maintainers: ["karabiner.inc"],
@@ -29,20 +30,25 @@ defmodule MateriaChat.Mixfile do
     mod =
       case Mix.env() do
         # テストのみアプリケーションとして起動する
-        :test -> [mod: {MateriaChat.Test.Application, []}]
-      #  :dev -> [mod: {Materia.Application, []}]
-        _ -> []
+        :test ->
+          [mod: {MateriaChat.Test.Application, []}]
+
+        #  :dev -> [mod: {Materia.Application, []}]
+        _ ->
+          []
       end
-     #[mod: {Materia.Application, []}]
-    mod ++ [
-      #mod: {Materia.Application, []},
-      extra_applications: [:logger, :runtime_tools]
-    ]
+
+    # [mod: {Materia.Application, []}]
+    mod ++
+      [
+        # mod: {Materia.Application, []},
+        extra_applications: [:logger, :runtime_tools]
+      ]
   end
 
   # Specifies which paths to compile per environment.
   defp elixirc_paths(:test), do: ["lib", "test/support"]
-  defp elixirc_paths(_),     do: ["lib"]
+  defp elixirc_paths(_), do: ["lib"]
 
   # Specifies your project dependencies.
   #
@@ -60,10 +66,10 @@ defmodule MateriaChat.Mixfile do
       {:cowboy, "~> 1.0"},
       {:cors_plug, "~> 1.5"},
       {:materia_utils, git: "https://github.com/karabiner-inc/materia_utils.git", override: true},
-      #{:materia_utils, path: "/Users/tsuchiro/code/pjt_materia/materia_utils", override: true},
+      # {:materia_utils, path: "/Users/tsuchiro/code/pjt_materia/materia_utils", override: true},
       {:materia, "~> 0.1.2"},
       {:ex_doc, ">= 0.0.0", only: :test},
-      {:excoveralls, "~> 0.10", only: :test},
+      {:excoveralls, "~> 0.10", only: :test}
     ]
   end
 
@@ -77,7 +83,7 @@ defmodule MateriaChat.Mixfile do
     [
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
-      "test": ["ecto.drop", "ecto.create --quiet", "ecto.migrate", "run priv/repo/seeds.exs", "test"]
+      test: ["ecto.drop", "ecto.create --quiet", "ecto.migrate", "run priv/repo/seeds.exs", "test"]
     ]
   end
 end

@@ -18,7 +18,7 @@ defmodule MateriaChatWeb.ChatRoomControllerTest do
 
   describe "index" do
     test "lists all chat_rooms", %{conn: conn} do
-      conn = get conn, chat_room_path(conn, :index)
+      conn = get(conn, chat_room_path(conn, :index))
       resp = json_response(conn, 200)
       assert length(resp) == 2
     end
@@ -26,19 +26,20 @@ defmodule MateriaChatWeb.ChatRoomControllerTest do
 
   describe "create chat_room" do
     test "renders chat_room when data is valid", %{conn: conn} do
-      conn = post conn, chat_room_path(conn, :create), @create_attrs
+      conn = post(conn, chat_room_path(conn, :create), @create_attrs)
       assert %{"id" => id} = json_response(conn, 201)
 
-      conn = get conn, chat_room_path(conn, :show, id)
+      conn = get(conn, chat_room_path(conn, :show, id))
       resp = json_response(conn, 200)
-      assert  resp == %{
-        "id" => id,
-        "access_poricy" => "some access_poricy",
-        "lock_version" => resp["lock_version"],
-        "status" => 42,
-        "title" => "some title",
-        "members" => []
-      }
+
+      assert resp == %{
+               "id" => id,
+               "access_poricy" => "some access_poricy",
+               "lock_version" => resp["lock_version"],
+               "status" => 42,
+               "title" => "some title",
+               "members" => []
+             }
     end
   end
 
@@ -46,31 +47,32 @@ defmodule MateriaChatWeb.ChatRoomControllerTest do
     setup [:create_chat_room]
 
     test "renders chat_room when data is valid", %{conn: conn, chat_room: %ChatRoom{id: id} = chat_room} do
-      conn = put conn, chat_room_path(conn, :update, chat_room), @update_attrs
+      conn = put(conn, chat_room_path(conn, :update, chat_room), @update_attrs)
       assert %{"id" => ^id} = json_response(conn, 200)
 
-      conn = get conn, chat_room_path(conn, :show, id)
-      assert json_response(conn, 200) == %{
-        "id" => id,
-        "access_poricy" => "some updated access_poricy",
-        "lock_version" => 43,
-        "status" => 43,
-        "title" => "some updated title",
-        "members" => []
-      }
-    end
+      conn = get(conn, chat_room_path(conn, :show, id))
 
+      assert json_response(conn, 200) == %{
+               "id" => id,
+               "access_poricy" => "some updated access_poricy",
+               "lock_version" => 43,
+               "status" => 43,
+               "title" => "some updated title",
+               "members" => []
+             }
+    end
   end
 
   describe "delete chat_room" do
     setup [:create_chat_room]
 
     test "deletes chosen chat_room", %{conn: conn, chat_room: chat_room} do
-      conn = delete conn, chat_room_path(conn, :delete, chat_room)
+      conn = delete(conn, chat_room_path(conn, :delete, chat_room))
       assert response(conn, 204)
-      assert_error_sent 404, fn ->
-        get conn, chat_room_path(conn, :show, chat_room)
-      end
+
+      assert_error_sent(404, fn ->
+        get(conn, chat_room_path(conn, :show, chat_room))
+      end)
     end
   end
 

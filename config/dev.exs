@@ -56,6 +56,4 @@ config :materia_chat, MateriaChat.Test.Repo,
   hostname: "localhost",
   pool_size: 10
 
-config :mateira_batch, MateriaChat.Schedules.JobScheduleManager,
-  max_concurrent_jobs: 2
-
+config :mateira_batch, MateriaChat.Schedules.JobScheduleManager, max_concurrent_jobs: 2

@@ -11,7 +11,7 @@ defmodule MateriaChat.Test.Application do
       # Start the Ecto repository
       supervisor(MateriaChat.Test.Repo, []),
       # Start the endpoint when the application starts
-      supervisor(MateriaChatWeb.Test.Endpoint, []),
+      supervisor(MateriaChatWeb.Test.Endpoint, [])
       # Start your own worker by calling: MateriaChat.Worker.start_link(arg1, arg2, arg3)
       # worker(MateriaChat.Worker, [arg1, arg2, arg3]),
     ]

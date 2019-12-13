@@ -11,15 +11,14 @@ defmodule MateriaChatWeb.ChatMessageView do
   end
 
   def render("chat_message.json", %{chat_message: chat_message}) do
-    result_map =
-    %{
+    result_map = %{
       id: chat_message.id,
       chat_room_id: chat_message.chat_room_id,
       from_user_id: chat_message.from_user_id,
       status: chat_message.status,
       body: chat_message.body,
       lock_version: chat_message.lock_version,
-      send_datetime: chat_message.send_datetime,
+      send_datetime: chat_message.send_datetime
     }
   end
 end

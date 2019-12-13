@@ -25,13 +25,13 @@ defmodule MateriaChatWeb.ChannelCase do
     end
   end
 
-
   setup tags do
     :ok = Ecto.Adapters.SQL.Sandbox.checkout(MateriaChat.Test.Repo)
+
     unless tags[:async] do
       Ecto.Adapters.SQL.Sandbox.mode(MateriaChat.Test.Repo, {:shared, self()})
     end
+
     :ok
   end
-
 end
